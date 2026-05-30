@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light theme semantic tokens (R G B triplets) */
+    --surface: 255 255 255;
+    --surface-2: 249 250 251;
+    --surface-3: 243 244 247;
+    --border: 226 229 236;
+    --content: 15 28 63;
+    --content-muted: 71 84 116;
+    --content-subtle: 120 132 158;
+  }
+
+  .dark {
+    --surface: 15 28 63;
+    --surface-2: 10 20 48;
+    --surface-3: 20 35 70;
+    --border: 36 52 92;
+    --content: 233 237 245;
+    --content-muted: 155 167 192;
+    --content-subtle: 111 128 161;
+  }
+
+  * {
+    border-color: rgb(var(--border));
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-2 font-sans text-content;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-content-subtle;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-teal-500/60 ring-offset-1 ring-offset-surface;
+  }
+}
+
+@layer components {
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-surface-3;
+  }
+  .skeleton::after {
+    @apply absolute inset-0;
+    content: '';
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgb(var(--surface-3) / 0) 0,
+      rgb(var(--content-subtle) / 0.08) 20%,
+      rgb(var(--content-subtle) / 0.15) 60%,
+      rgb(var(--surface-3) / 0)
+    );
+    animation: shimmer 1.6s infinite;
+  }
+
+  .card {
+    @apply rounded-2xl border border-border bg-surface shadow-card;
+  }
+}
