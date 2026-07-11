@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/Button';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
+
+const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
 const FEATURES = [
   {
@@ -61,38 +63,33 @@ const FEATURES = [
   },
 ];
 
-function HeroWords({ text }: { text: string }) {
-  const words = text.split(' ');
-  return (
-    <>
-      {words.map((word, i) => (
-        <span
-          key={i}
-          className="hero-word inline-block"
-          style={{ animationDelay: `${i * 300}ms` }}
-        >
-          {word}
-          {i < words.length - 1 && '\u00A0'}
-        </span>
-      ))}
-    </>
-  );
+function useScrollReveal(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e?.isIntersecting) { setVisible(true); obs.unobserve(el); } },
+      { threshold, rootMargin: '0px 0px -40px 0px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
 }
 
 export function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
-  const { ref: featuresRef, isVisible: featuresVisible } = useScrollReveal({ threshold: 0.1 });
-  const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal({ threshold: 0.2 });
-  const { ref: footerRef, isVisible: footerVisible } = useScrollReveal({ threshold: 0.3 });
+  const { ref: featRef, visible: featVisible } = useScrollReveal(0.1);
+  const { ref: ctaRef, visible: ctaVisible } = useScrollReveal(0.2);
+  const { ref: footRef, visible: footVisible } = useScrollReveal(0.3);
 
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
-          ticking = false;
-        });
+        requestAnimationFrame(() => { setScrollY(window.scrollY); ticking = false; });
         ticking = true;
       }
     };
@@ -100,7 +97,11 @@ export function LandingPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const parallaxShift = scrollY * 0.04;
+  const px = scrollY * 0.04;
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Hero words animation ──
+  const heroWords = 'Run your school with clarity.'.split(' ');
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-2">
@@ -109,9 +110,7 @@ export function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Logo />
           <Link to="/login">
-            <Button variant="ghost" size="sm">
-              Sign in
-            </Button>
+            <Button variant="ghost" size="sm">Sign in</Button>
           </Link>
         </div>
       </header>
@@ -119,35 +118,76 @@ export function LandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-800 text-white">
         <div
-          className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl will-change-transform"
-          style={{ transform: `translate3d(${parallaxShift}px, 0, 0)` }}
+          className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl"
+          style={{
+            willChange: 'transform',
+            transform: `translate3d(${px}px, 0, 0)`,
+          }}
         />
         <div
-          className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl will-change-transform"
-          style={{ transform: `translate3d(${-parallaxShift * 0.7}px, 0, 0)` }}
+          className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl"
+          style={{
+            willChange: 'transform',
+            transform: `translate3d(${-px * 0.7}px, 0, 0)`,
+          }}
         />
         <div className="relative mx-auto max-w-6xl px-6 py-24 text-center lg:py-32">
           <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            <HeroWords text="Run your school with clarity." />
+            {heroWords.map((word, i) => (
+              <span
+                key={i}
+                className="inline-block"
+                style={{
+                  opacity: 0,
+                  transform: 'translateY(14px)',
+                  animation: prefersReduced
+                    ? 'none'
+                    : `fadeInUp 350ms ${EASE_OUT} ${i * 300}ms forwards`,
+                }}
+              >
+                {word}{i < heroWords.length - 1 && '\u00A0'}
+              </span>
+            ))}
           </h1>
-          <p className="hero-subtitle mx-auto mt-6 max-w-2xl text-lg text-navy-100">
+          <p
+            className="mx-auto mt-6 max-w-2xl text-lg text-navy-100"
+            style={{
+              opacity: 0,
+              transform: 'translateY(10px)',
+              animation: prefersReduced
+                ? 'none'
+                : `fadeInUp 500ms ${EASE_OUT} 700ms forwards`,
+            }}
+          >
             Students, attendance, grades, and fees — unified in one secure, real-time
             platform built for modern schools.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link to="/login">
-              <Button size="lg" className="hero-cta group">
+              <span
+                className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97] active:transition-duration-[80ms]"
+                style={{
+                  animation: prefersReduced ? 'none' : `fadeInUp 500ms ${EASE_OUT} 900ms forwards, ctaFloat 3s ease-in-out 2s infinite`,
+                  opacity: 0,
+                }}
+              >
                 Get started
-              </Button>
+              </span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section ref={featuresRef} className="mx-auto w-full max-w-6xl px-6 py-20">
+      <section ref={featRef} className="mx-auto w-full max-w-6xl px-6 py-20">
         <h2
-          className={`text-center font-heading text-3xl font-bold text-content transition-all ${featuresVisible ? 'section-title-visible' : 'section-title-hidden'}`}
+          className="text-center font-heading text-3xl font-bold text-content"
+          style={{
+            opacity: featVisible ? 1 : 0,
+            letterSpacing: featVisible ? '0.04em' : '-0.02em',
+            transform: featVisible ? 'translateY(0)' : 'translateY(8px)',
+            transition: prefersReduced ? 'none' : `opacity 500ms ${EASE}, letter-spacing 600ms ${EASE}, transform 500ms ${EASE}`,
+          }}
         >
           Everything you need
         </h2>
@@ -156,19 +196,13 @@ export function LandingPage() {
         </p>
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f, i) => (
-            <div
+            <FeatureCard
               key={f.title}
-              className={`feature-card group rounded-2xl border border-content/10 bg-surface p-6 shadow-sm ${featuresVisible ? 'feature-card-visible' : 'feature-card-hidden'}`}
-              style={{ transitionDelay: `${i * 90}ms` }}
-            >
-              <div className="feature-icon flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
-                {f.icon}
-              </div>
-              <h3 className="mt-4 font-heading text-lg font-semibold text-content">
-                {f.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-content-muted">{f.desc}</p>
-            </div>
+              feature={f}
+              index={i}
+              visible={featVisible}
+              reduced={prefersReduced}
+            />
           ))}
         </div>
       </section>
@@ -177,32 +211,111 @@ export function LandingPage() {
       <section ref={ctaRef} className="border-t border-content/10 bg-surface py-20">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h2
-            className={`font-heading text-3xl font-bold text-content transition-all ${ctaVisible ? 'cta-visible' : 'cta-hidden'}`}
-            style={{ transitionDelay: '0ms' }}
+            className="font-heading text-3xl font-bold text-content"
+            style={{
+              opacity: ctaVisible ? 1 : 0,
+              transform: ctaVisible ? 'translateY(0)' : 'translateY(10px)',
+              transition: prefersReduced ? 'none' : `opacity 400ms ${EASE} 0ms, transform 400ms ${EASE} 0ms`,
+            }}
           >
             Ready to modernize your school?
           </h2>
           <p
-            className={`mt-4 text-content-muted transition-all ${ctaVisible ? 'cta-visible' : 'cta-hidden'}`}
-            style={{ transitionDelay: '150ms' }}
+            className="mt-4 text-content-muted"
+            style={{
+              opacity: ctaVisible ? 1 : 0,
+              transform: ctaVisible ? 'translateY(0)' : 'translateY(10px)',
+              transition: prefersReduced ? 'none' : `opacity 400ms ${EASE} 150ms, transform 400ms ${EASE} 150ms`,
+            }}
           >
             Sign in to access your dashboard and start managing your institution today.
           </p>
           <Link to="/login" className="mt-8 inline-block">
-            <Button size="lg" className="cta-float-btn hero-cta">
+            <span
+              className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97]"
+              style={{
+                animation: prefersReduced ? 'none' : 'ctaFloat 3s ease-in-out infinite',
+              }}
+            >
               Sign in to Fenix
-            </Button>
+            </span>
           </Link>
         </div>
       </section>
 
       {/* Footer */}
       <footer
-        ref={footerRef}
-        className={`border-t border-content/10 bg-surface-2 py-8 text-center text-sm text-content-muted transition-all ${footerVisible ? 'footer-visible' : 'footer-hidden'}`}
+        ref={footRef}
+        className="border-t border-content/10 bg-surface-2 py-8 text-center text-sm text-content-muted"
+        style={{
+          opacity: footVisible ? 1 : 0,
+          transition: prefersReduced ? 'none' : `opacity 500ms ${EASE} 400ms`,
+        }}
       >
         © {new Date().getFullYear()} Fenix SMS. All rights reserved.
       </footer>
+
+      {/* Global keyframes — injected once via <style> */}
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ctaFloat {
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-4px); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ── Feature card with hover ── */
+function FeatureCard({
+  feature,
+  index,
+  visible,
+  reduced,
+}: {
+  feature: (typeof FEATURES)[number];
+  index: number;
+  visible: boolean;
+  reduced: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      className="group relative rounded-2xl border bg-surface p-6 shadow-sm"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderColor: hovered ? 'rgba(0, 217, 217, 0.35)' : 'rgb(var(--border))',
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? hovered ? 'translateY(-8px)' : 'translateY(0)'
+          : 'translateY(20px)',
+        boxShadow: hovered
+          ? '0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,217,217,0.25)'
+          : '0 1px 2px 0 rgb(15 28 63 / 0.06), 0 4px 16px -4px rgb(15 28 63 / 0.10)',
+        transition: reduced
+          ? 'none'
+          : `opacity 300ms ${EASE} ${index * 90}ms, transform 300ms ${EASE} ${index * 90}ms, box-shadow 300ms ${EASE}, border-color 300ms ${EASE}`,
+      }}
+    >
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400"
+        style={{
+          transition: reduced ? 'none' : `transform 300ms ${EASE}`,
+          transform: hovered ? 'rotate(5deg) scale(1.1)' : 'rotate(0deg) scale(1)',
+        }}
+      >
+        {feature.icon}
+      </div>
+      <h3 className="mt-4 font-heading text-lg font-semibold text-content">
+        {feature.title}
+      </h3>
+      <p className="mt-2 text-sm leading-relaxed text-content-muted">{feature.desc}</p>
     </div>
   );
 }
