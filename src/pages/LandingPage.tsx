@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/Button';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const FEATURES = [
   {
@@ -59,7 +61,47 @@ const FEATURES = [
   },
 ];
 
+function HeroWords({ text }: { text: string }) {
+  const words = text.split(' ');
+  return (
+    <>
+      {words.map((word, i) => (
+        <span
+          key={i}
+          className="hero-word inline-block"
+          style={{ animationDelay: `${i * 300}ms` }}
+        >
+          {word}
+          {i < words.length - 1 && '\u00A0'}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export function LandingPage() {
+  const [scrollY, setScrollY] = useState(0);
+  const { ref: featuresRef, isVisible: featuresVisible } = useScrollReveal({ threshold: 0.1 });
+  const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal({ threshold: 0.2 });
+  const { ref: footerRef, isVisible: footerVisible } = useScrollReveal({ threshold: 0.3 });
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const parallaxShift = scrollY * 0.04;
+
   return (
     <div className="flex min-h-screen flex-col bg-surface-2">
       {/* Navbar */}
@@ -76,39 +118,50 @@ export function LandingPage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-800 text-white">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl" />
-        <div className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl" />
+        <div
+          className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl will-change-transform"
+          style={{ transform: `translate3d(${parallaxShift}px, 0, 0)` }}
+        />
+        <div
+          className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl will-change-transform"
+          style={{ transform: `translate3d(${-parallaxShift * 0.7}px, 0, 0)` }}
+        />
         <div className="relative mx-auto max-w-6xl px-6 py-24 text-center lg:py-32">
           <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Run your school with clarity.
+            <HeroWords text="Run your school with clarity." />
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-navy-100">
+          <p className="hero-subtitle mx-auto mt-6 max-w-2xl text-lg text-navy-100">
             Students, attendance, grades, and fees — unified in one secure, real-time
             platform built for modern schools.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link to="/login">
-              <Button size="lg">Get started</Button>
+              <Button size="lg" className="hero-cta group">
+                Get started
+              </Button>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="mx-auto w-full max-w-6xl px-6 py-20">
-        <h2 className="text-center font-heading text-3xl font-bold text-content">
+      <section ref={featuresRef} className="mx-auto w-full max-w-6xl px-6 py-20">
+        <h2
+          className={`text-center font-heading text-3xl font-bold text-content transition-all ${featuresVisible ? 'section-title-visible' : 'section-title-hidden'}`}
+        >
           Everything you need
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-content-muted">
           A complete school management system — no spreadsheets, no guesswork.
         </p>
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f) => (
+          {FEATURES.map((f, i) => (
             <div
               key={f.title}
-              className="rounded-2xl border border-content/10 bg-surface p-6 shadow-sm transition hover:shadow-md"
+              className={`feature-card group rounded-2xl border border-content/10 bg-surface p-6 shadow-sm ${featuresVisible ? 'feature-card-visible' : 'feature-card-hidden'}`}
+              style={{ transitionDelay: `${i * 90}ms` }}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
+              <div className="feature-icon flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
                 {f.icon}
               </div>
               <h3 className="mt-4 font-heading text-lg font-semibold text-content">
@@ -121,22 +174,33 @@ export function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-content/10 bg-surface py-20">
+      <section ref={ctaRef} className="border-t border-content/10 bg-surface py-20">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="font-heading text-3xl font-bold text-content">
+          <h2
+            className={`font-heading text-3xl font-bold text-content transition-all ${ctaVisible ? 'cta-visible' : 'cta-hidden'}`}
+            style={{ transitionDelay: '0ms' }}
+          >
             Ready to modernize your school?
           </h2>
-          <p className="mt-4 text-content-muted">
+          <p
+            className={`mt-4 text-content-muted transition-all ${ctaVisible ? 'cta-visible' : 'cta-hidden'}`}
+            style={{ transitionDelay: '150ms' }}
+          >
             Sign in to access your dashboard and start managing your institution today.
           </p>
           <Link to="/login" className="mt-8 inline-block">
-            <Button size="lg">Sign in to Fenix</Button>
+            <Button size="lg" className="cta-float-btn hero-cta">
+              Sign in to Fenix
+            </Button>
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-content/10 bg-surface-2 py-8 text-center text-sm text-content-muted">
+      <footer
+        ref={footerRef}
+        className={`border-t border-content/10 bg-surface-2 py-8 text-center text-sm text-content-muted transition-all ${footerVisible ? 'footer-visible' : 'footer-hidden'}`}
+      >
         © {new Date().getFullYear()} Fenix SMS. All rights reserved.
       </footer>
     </div>
