@@ -89,6 +89,14 @@ const config: Config = {
       content: 'rgb(var(--content) / <alpha-value>)',
       'content-muted': 'rgb(var(--content-muted) / <alpha-value>)',
       'content-subtle': 'rgb(var(--content-subtle) / <alpha-value>)',
+
+      // shadcn aliases
+      background: 'rgb(var(--background) / <alpha-value>)',
+      foreground: 'rgb(var(--foreground) / <alpha-value>)',
+      input: 'rgb(var(--input) / <alpha-value>)',
+      ring: 'rgb(var(--ring) / <alpha-value>)',
+      'muted-foreground': 'rgb(var(--muted-foreground) / <alpha-value>)',
+      destructive: 'rgb(var(--destructive) / <alpha-value>)',
     },
     fontFamily: {
       heading: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
