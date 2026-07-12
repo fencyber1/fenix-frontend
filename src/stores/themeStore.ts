@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 type Theme = 'light' | 'dark';
-const STORAGE_KEY = 'fenix-theme';
+const STORAGE_KEY = 'fendux-theme';
 
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light';

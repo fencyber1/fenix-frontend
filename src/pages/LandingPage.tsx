@@ -242,7 +242,7 @@ export function LandingPage() {
                 animation: prefersReduced ? 'none' : 'ctaFloat 3s ease-in-out infinite',
               }}
             >
-              Sign in to Fenix
+              Sign in to FenDux
             </span>
           </Link>
         </div>
@@ -257,7 +257,7 @@ export function LandingPage() {
           transition: prefersReduced ? 'none' : `opacity 500ms ${EASE} 400ms`,
         }}
       >
-        © {new Date().getFullYear()} Fenix SMS. All rights reserved.
+        © {new Date().getFullYear()} FenDux SMS. All rights reserved.
       </footer>
 
       {/* Global keyframes — injected once via <style> */}

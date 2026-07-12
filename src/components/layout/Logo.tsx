@@ -18,7 +18,7 @@ export function Logo({ collapsed, className }: { collapsed?: boolean; className?
       </span>
       {!collapsed && (
         <span className="font-heading text-xl font-bold tracking-tight text-content">
-          Fenix
+FenDux
         </span>
       )}
     </div>

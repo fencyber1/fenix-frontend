@@ -23,7 +23,7 @@ export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const base = `/${location.pathname.split('/')[1] ?? ''}`;
-  const title = TITLES[base] ?? 'Fenix';
+  const title = TITLES[base] ?? 'FenDux';
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface-2">

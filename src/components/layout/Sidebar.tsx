@@ -70,7 +70,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
       <div className="border-t border-border px-5 py-4">
-        <p className="text-xs text-content-subtle">Fenix SMS v1.0</p>
+        <p className="text-xs text-content-subtle">FenDux SMS v1.0</p>
       </div>
     </aside>
   );

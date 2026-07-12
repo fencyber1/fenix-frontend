@@ -47,7 +47,7 @@ export function LoginPage() {
             platform built for modern schools.
           </p>
         </div>
-        <p className="relative text-sm text-navy-200">© {new Date().getFullYear()} Fenix SMS</p>
+        <p className="relative text-sm text-navy-200">© {new Date().getFullYear()} FenDux SMS</p>
       </div>
 
       {/* Form panel */}

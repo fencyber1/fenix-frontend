@@ -46,14 +46,14 @@ export function SignUpPage() {
         <Logo className="relative [&_span:last-child]:text-white" />
         <div className="relative max-w-md">
           <h1 className="font-heading text-4xl font-bold leading-tight">
-            Get started with Fenix.
+            Get started with FenDux.
           </h1>
           <p className="mt-4 text-navy-100">
             Create your school's account in minutes. Manage students, attendance, grades, and fees
             — all in one secure platform.
           </p>
         </div>
-        <p className="relative text-sm text-navy-200">© {new Date().getFullYear()} Fenix SMS</p>
+        <p className="relative text-sm text-navy-200">© {new Date().getFullYear()} FenDux SMS</p>
       </div>
 
       {/* Form panel */}
