@@ -18,14 +18,18 @@ export const loginSchema = z.object({
   classId: z.string().trim().min(1).max(50).optional(),
   studentId: z.string().trim().min(1).max(50).optional(),
 }).superRefine((v, ctx) => {
-  if (v.role === 'TEACHER' && !v.schoolId) {
+  if (!v.role) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Select a role', path: ['role'] });
+    return;
+  }
+  if (!v.schoolId) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
   }
-  if (v.role === 'STUDENT') {
-    if (!v.schoolId) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
+  if (v.role === 'STUDENT' && !v.classId) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Class ID is required for students', path: ['classId'] });
   }
-  if (v.role === 'PARENT') {
-    if (!v.schoolId) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
+  if (v.role === 'PARENT' && !v.studentId) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Student ID is required for parents', path: ['studentId'] });
   }
 });
 

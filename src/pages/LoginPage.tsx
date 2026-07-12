@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
@@ -30,18 +30,25 @@ export function LoginPage() {
     register,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { role: undefined, schoolId: '', classId: '', studentId: '' },
   });
 
+  useEffect(() => {
+    if (selectedRole) {
+      setValue('role', selectedRole, { shouldValidate: false });
+    }
+  }, [selectedRole, setValue]);
+
   const onSubmit = async (values: LoginValues) => {
     try {
       const user = await login({
         email: values.email,
         password: values.password,
-        role: selectedRole ?? undefined,
+        role: values.role,
         schoolId: values.schoolId || undefined,
         classId: values.classId || undefined,
         studentId: values.studentId || undefined,
@@ -87,7 +94,13 @@ export function LoginPage() {
               <button
                 key={r.key}
                 type="button"
-                onClick={() => setSelectedRole(r.key)}
+                onClick={() => {
+                  setSelectedRole(r.key);
+                  setValue('role', r.key);
+                  setValue('schoolId', '');
+                  setValue('classId', '');
+                  setValue('studentId', '');
+                }}
                 className={cn(
                   'flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all',
                   selectedRole === r.key
@@ -109,6 +122,8 @@ export function LoginPage() {
 
           {selectedRole && (
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
+              <input type="hidden" {...register('role')} />
+
               {/* School ID — always shown */}
               <Input
                 label="School ID"
