@@ -13,7 +13,7 @@ export const passwordSchema = z
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email('Enter a valid email'),
   password: z.string().min(1, 'Password is required'),
-  role: z.enum(['TEACHER', 'STUDENT', 'PARENT']).optional(),
+  role: z.enum(['ADMIN', 'TEACHER', 'STUDENT', 'PARENT']).optional(),
   schoolId: z.string().trim().max(50).optional(),
   classId: z.string().trim().max(50).optional(),
   studentId: z.string().trim().max(50).optional(),
@@ -22,7 +22,7 @@ export const loginSchema = z.object({
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Select a role', path: ['role'] });
     return;
   }
-  if (!v.schoolId) {
+  if (v.role !== 'ADMIN' && !v.schoolId) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
   }
   if (v.role === 'STUDENT' && !v.classId) {

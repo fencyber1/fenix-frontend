@@ -10,12 +10,13 @@ import { loginSchema, type LoginValues } from '@/features/auth/auth.schemas';
 import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
 import { Logo } from '@/components/layout/Logo';
-import { IconStudents, IconGrades, IconStaff } from '@/components/ui/icons';
+import { IconStudents, IconGrades, IconStaff, IconDashboard } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 
-type RoleTab = 'TEACHER' | 'STUDENT' | 'PARENT';
+type RoleTab = 'ADMIN' | 'TEACHER' | 'STUDENT' | 'PARENT';
 
 const ROLES: { key: RoleTab; label: string; icon: React.ReactNode; desc: string }[] = [
+  { key: 'ADMIN', label: 'Admin', icon: <IconDashboard />, desc: 'School admin' },
   { key: 'TEACHER', label: 'Teacher', icon: <IconStaff />, desc: 'Staff member' },
   { key: 'STUDENT', label: 'Student', icon: <IconStudents />, desc: 'Enrolled student' },
   { key: 'PARENT', label: 'Parent', icon: <IconGrades />, desc: 'Parent / Guardian' },
@@ -89,7 +90,7 @@ export function LoginPage() {
           <p className="mt-1 text-sm text-content-muted">Select your role and enter your credentials.</p>
 
           {/* Role selector */}
-          <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {ROLES.map((r) => (
               <button
                 key={r.key}
@@ -128,13 +129,15 @@ export function LoginPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
               <input type="hidden" {...register('role')} />
 
-              {/* School ID — always shown */}
-              <Input
-                label="School ID"
-                placeholder={selectedRole === 'TEACHER' ? 'e.g. SCH-001' : selectedRole === 'STUDENT' ? 'e.g. SCH-001' : 'e.g. SCH-001'}
-                error={errors.schoolId?.message}
-                {...register('schoolId')}
-              />
+              {/* School ID — not needed for admin */}
+              {selectedRole !== 'ADMIN' && (
+                <Input
+                  label="School ID"
+                  placeholder="e.g. SCH-001"
+                  error={errors.schoolId?.message}
+                  {...register('schoolId')}
+                />
+              )}
 
               {/* Class ID — student only */}
               {selectedRole === 'STUDENT' && (
