@@ -109,9 +109,14 @@ export function LandingPage() {
       <header className="sticky top-0 z-30 border-b border-content/10 bg-surface-2/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Logo />
-          <Link to="/login">
-            <Button variant="ghost" size="sm">Sign in</Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/login">
+              <Button variant="ghost" size="sm">Sign in</Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="primary" size="sm">Get started</Button>
+            </Link>
+          </div>
         </div>
       </header>
 
