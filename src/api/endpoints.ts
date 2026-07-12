@@ -175,6 +175,8 @@ export const notificationsApi = {
 
 // ---------------- Tenant / Settings ----------------
 export const tenantApi = {
+  list: () => unwrap<Tenant[]>(api.get('/tenants')),
+  remove: (id: string) => api.delete(`/tenants/${id}`),
   get: () => unwrap<Tenant>(api.get('/tenants/me')),
   update: (body: Record<string, unknown>) => unwrap<Tenant>(api.put('/tenants/me', body)),
   getPreferences: () => unwrap<NotificationPreference[]>(api.get('/tenants/me/notification-preferences')),

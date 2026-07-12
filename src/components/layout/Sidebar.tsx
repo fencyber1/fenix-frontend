@@ -35,6 +35,7 @@ const NAV: NavItem[] = [
   { to: '/fees', label: 'Fees', icon: <IconFees />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT'] },
   { to: '/classes', label: 'Classes', icon: <IconClasses />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'] },
   { to: '/staff', label: 'Staff', icon: <IconStaff />, roles: ['SUPER_ADMIN', 'ADMIN'] },
+  { to: '/tenants', label: 'Schools', icon: <IconClasses />, roles: ['SUPER_ADMIN'] },
   { to: '/reports', label: 'Reports', icon: <IconReports />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'] },
   { to: '/audit', label: 'Audit Log', icon: <IconAudit />, roles: ['SUPER_ADMIN', 'ADMIN'] },
   { to: '/settings', label: 'Settings', icon: <IconSettings />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT'] },
