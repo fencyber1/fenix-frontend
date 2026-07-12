@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -17,7 +18,7 @@ export function ParentDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dashboardApi.getParent().then(setData).catch(() => {}).finally(() => setLoading(false));
+    dashboardApi.getParent().then(setData).catch((err) => { console.error('Parent dashboard error:', err); toast.error('Failed to load dashboard'); }).finally(() => setLoading(false));
   }, []);
 
   const totalChildren = data?.children.length ?? 0;
