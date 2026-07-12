@@ -24,7 +24,6 @@ import { IconPlus, IconSearch, IconStaff, IconTrash } from '@/components/ui/icon
 
 const staffSchema = z.object({
   email: z.string().trim().toLowerCase().email('Valid email required'),
-  employeeNumber: z.string().trim().min(1, 'Required').max(40),
   firstName: z.string().trim().min(1, 'Required').max(80),
   lastName: z.string().trim().min(1, 'Required').max(80),
   role: z.string().trim().min(1, 'Required').max(60),
@@ -63,7 +62,7 @@ export function StaffPage() {
   } = useForm<StaffValues>({ resolver: zodResolver(staffSchema), defaultValues: { systemRole: 'TEACHER' } });
 
   const openCreate = () => {
-    reset({ systemRole: 'TEACHER', role: 'Teacher', email: '', employeeNumber: '', firstName: '', lastName: '', department: '', phone: '', joinDate: new Date().toISOString().slice(0, 10) });
+    reset({ systemRole: 'TEACHER', role: 'Teacher', email: '', firstName: '', lastName: '', department: '', phone: '', joinDate: new Date().toISOString().slice(0, 10) });
     setDrawerOpen(true);
   };
 
@@ -182,7 +181,6 @@ export function StaffPage() {
           </div>
           <Input label="Email" type="email" error={errors.email?.message} {...register('email')} />
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Employee number" error={errors.employeeNumber?.message} {...register('employeeNumber')} />
             <Input label="Join date" type="date" error={errors.joinDate?.message} {...register('joinDate')} />
           </div>
           <div className="grid grid-cols-2 gap-4">
