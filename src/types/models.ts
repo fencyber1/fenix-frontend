@@ -330,9 +330,22 @@ export interface ParentDashboardData {
     name: string;
     studentNumber: string;
     className: string;
+    classId: string | null;
     attendanceToday: string;
     averageGrade: number;
     pendingFees: number;
+    subjects: {
+      name: string;
+      code: string;
+      teacherName: string;
+    }[];
+    recentGrades: {
+      subject: string;
+      score: string;
+      maxScore: string;
+      gradeLetter: string;
+      term: string;
+    }[];
   }[];
   overallPendingFees: number;
 }
