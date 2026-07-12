@@ -48,6 +48,7 @@ export interface ClassTeacherRef {
 export interface SchoolClass {
   id: string;
   tenantId: string;
+  displayId: string | null;
   name: string;
   section: string;
   academicYear: string;
@@ -62,6 +63,7 @@ export interface Subject {
   classId: string;
   name: string;
   code: string;
+  description: string | null;
   teacherId: string | null;
   teacher?: ClassTeacherRef | null;
   class?: { id: string; name: string; section: string };

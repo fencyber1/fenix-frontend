@@ -19,7 +19,7 @@ export function usePermissions() {
     canMarkAttendance: isStaff,
     canGrade: isStaff,
     canManageFees: isAdmin,
-    canManageClasses: isAdmin,
+    canManageClasses: isStaff,
     canManageStaff: isAdmin,
     canViewAudit: isAdmin,
     canViewDashboard: isStaff,

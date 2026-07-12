@@ -116,6 +116,8 @@ export const classesApi = {
   remove: (id: string) => api.delete(`/classes/${id}`),
   enroll: (id: string, studentId: string, academicYear?: string) =>
     api.post(`/classes/${id}/enroll`, { studentId, academicYear }),
+  inviteStudent: (id: string, body: { email: string; firstName: string; lastName: string }) =>
+    unwrap<{ token: string }>(api.post(`/classes/${id}/invite-student`, body)),
 };
 
 // ---------------- Subjects ----------------

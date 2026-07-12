@@ -18,6 +18,7 @@ import { StudentProfilePage } from '@/pages/StudentProfilePage';
 import { StudentDashboard } from '@/pages/StudentDashboard';
 import { TeacherDashboard } from '@/pages/TeacherDashboard';
 import { ParentDashboard } from '@/pages/ParentDashboard';
+import ClassDetailPage from '@/pages/ClassDetailPage';
 
 // Code-split heavier routes (charts / PDF / tables) so the initial bundle stays lean.
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
@@ -129,6 +130,14 @@ export function App() {
             element={
               <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
                 <Suspense fallback={<PageFallback />}><ClassesPage /></Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/classes/:id"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
+                <ClassDetailPage />
               </ProtectedRoute>
             }
           />
