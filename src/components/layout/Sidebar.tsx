@@ -25,7 +25,10 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', icon: <IconDashboard />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'] },
+  { to: '/dashboard', label: 'Dashboard', icon: <IconDashboard />, roles: ['SUPER_ADMIN', 'ADMIN'] },
+  { to: '/student', label: 'My Dashboard', icon: <IconDashboard />, roles: ['STUDENT'] },
+  { to: '/teacher', label: 'My Dashboard', icon: <IconDashboard />, roles: ['TEACHER'] },
+  { to: '/parent', label: 'My Dashboard', icon: <IconDashboard />, roles: ['PARENT'] },
   { to: '/students', label: 'Students', icon: <IconStudents />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'PARENT', 'STUDENT'] },
   { to: '/attendance', label: 'Attendance', icon: <IconAttendance />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'] },
   { to: '/grades', label: 'Grades', icon: <IconGrades />, roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'] },

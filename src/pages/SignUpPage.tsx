@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import { applyApiError } from '@/lib/formErrors';
+import { homeForRole } from '@/lib/roles';
 import { registerSchema, type RegisterValues } from '@/features/auth/auth.schemas';
 import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
@@ -22,7 +23,7 @@ export function SignUpPage() {
 
   const onSubmit = async (values: RegisterValues) => {
     try {
-      await registerSchool({
+      const user = await registerSchool({
         schoolName: values.schoolName,
         email: values.email,
         password: values.password,
@@ -30,7 +31,7 @@ export function SignUpPage() {
         lastName: values.lastName,
       });
       toast.success('Account created! Check your email to verify.');
-      navigate('/dashboard', { replace: true });
+      navigate(homeForRole(user.role), { replace: true });
     } catch (err) {
       applyApiError(err, setError);
     }

@@ -1,9 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
 import { applyApiError } from '@/lib/formErrors';
+import { homeForRole } from '@/lib/roles';
 import { loginSchema, type LoginValues } from '@/features/auth/auth.schemas';
 import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
@@ -12,8 +13,6 @@ import { Logo } from '@/components/layout/Logo';
 export function LoginPage() {
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: string } | null)?.from ?? '/dashboard';
 
   const {
     register,
@@ -24,9 +23,9 @@ export function LoginPage() {
 
   const onSubmit = async (values: LoginValues) => {
     try {
-      await login(values.email, values.password);
+      const user = await login(values.email, values.password);
       toast.success('Welcome back');
-      navigate(from, { replace: true });
+      navigate(homeForRole(user.role), { replace: true });
     } catch (err) {
       applyApiError(err, setError);
     }

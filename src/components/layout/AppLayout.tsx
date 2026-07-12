@@ -5,6 +5,9 @@ import { Topbar } from './Topbar';
 
 const TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
+  '/student': 'My Dashboard',
+  '/teacher': 'My Dashboard',
+  '/parent': 'My Dashboard',
   '/students': 'Students',
   '/attendance': 'Attendance',
   '/grades': 'Grades',
