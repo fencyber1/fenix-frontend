@@ -15,13 +15,13 @@ export interface AuthUser {
   id: string;
   email: string;
   role: Role;
-  schoolId: string | null;
+  tenantId: string;
   isVerified: boolean;
 }
 
 export interface Student {
   id: string;
-  schoolId: string;
+  tenantId: string;
   userId: string | null;
   studentNumber: string;
   firstName: string;
@@ -46,7 +46,7 @@ export interface ClassTeacherRef {
 
 export interface SchoolClass {
   id: string;
-  schoolId: string;
+  tenantId: string;
   name: string;
   section: string;
   academicYear: string;
@@ -69,7 +69,7 @@ export interface Subject {
 export interface Staff {
   id: string;
   userId: string;
-  schoolId: string;
+  tenantId: string;
   employeeNumber: string;
   firstName: string;
   lastName: string;
@@ -126,7 +126,7 @@ export interface Grade {
 export interface ReportCard {
   student: { id: string; name: string; studentNumber: string };
   term: string;
-  school: { name: string; logoUrl: string | null };
+  tenant: { name: string; logoUrl: string | null };
   subjects: {
     subject: string;
     code: string;
@@ -141,7 +141,7 @@ export interface ReportCard {
 
 export interface FeeStructure {
   id: string;
-  schoolId: string;
+  tenantId: string;
   name: string;
   amount: string;
   frequency: FeeFrequency;
@@ -216,7 +216,7 @@ export interface AuditLog {
   actor?: { email: string; role: Role } | null;
 }
 
-export interface SchoolDocument {
+export interface TenantDocument {
   id: string;
   studentId: string;
   name: string;
@@ -228,7 +228,7 @@ export interface SchoolDocument {
   uploadedAt: string;
 }
 
-export interface School {
+export interface Tenant {
   id: string;
   name: string;
   logoUrl: string | null;

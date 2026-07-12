@@ -28,7 +28,7 @@ export function ReportCardPDF({ data }: { data: ReportCard }) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.school}>{data.school.name}</Text>
+          <Text style={styles.school}>{data.tenant.name}</Text>
           <Text style={styles.sub}>Academic Report Card · Powered by Fenix SMS</Text>
         </View>
 

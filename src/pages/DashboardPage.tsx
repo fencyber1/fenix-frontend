@@ -56,7 +56,7 @@ export function DashboardPage() {
 
   return (
     <div>
-      <PageHeader title="Dashboard" description="A live snapshot of your school." />
+      <PageHeader title="Dashboard" description="A live snapshot of your tenant." />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard loading={isLoading} label="Total Students" value={k?.totalStudents ?? 0} icon={<IconStudents />} tone="teal" />

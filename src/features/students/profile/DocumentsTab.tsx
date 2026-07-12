@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { documentsApi } from '@/api/endpoints';
-import type { SchoolDocument } from '@/types/models';
+import type { TenantDocument } from '@/types/models';
 import { usePermissions } from '@/hooks/usePermissions';
 import { errorMessage } from '@/lib/formErrors';
 import { formatBytes, formatDate } from '@/lib/utils';
@@ -30,7 +30,7 @@ export function DocumentsTab({ studentId }: { studentId: string }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState('OTHER');
   const [uploading, setUploading] = useState(false);
-  const [deleting, setDeleting] = useState<SchoolDocument | null>(null);
+  const [deleting, setDeleting] = useState<TenantDocument | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['documents', studentId],

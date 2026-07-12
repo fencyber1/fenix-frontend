@@ -15,9 +15,9 @@ import type {
   Payment,
   PresignResult,
   ReportCard,
-  School,
+  Tenant,
   SchoolClass,
-  SchoolDocument,
+  TenantDocument,
   Staff,
   Student,
   Subject,
@@ -161,14 +161,14 @@ export const notificationsApi = {
   markAllRead: () => unwrap<{ updated: number }>(api.patch('/notifications/read-all')),
 };
 
-// ---------------- School / Settings ----------------
-export const schoolApi = {
-  get: () => unwrap<School>(api.get('/schools/me')),
-  update: (body: Record<string, unknown>) => unwrap<School>(api.put('/schools/me', body)),
-  getPreferences: () => unwrap<NotificationPreference[]>(api.get('/schools/me/notification-preferences')),
+// ---------------- Tenant / Settings ----------------
+export const tenantApi = {
+  get: () => unwrap<Tenant>(api.get('/tenants/me')),
+  update: (body: Record<string, unknown>) => unwrap<Tenant>(api.put('/tenants/me', body)),
+  getPreferences: () => unwrap<NotificationPreference[]>(api.get('/tenants/me/notification-preferences')),
   setPreferences: (
     preferences: { type: string; channel: string; enabled: boolean }[],
-  ) => unwrap<NotificationPreference[]>(api.put('/schools/me/notification-preferences', { preferences })),
+  ) => unwrap<NotificationPreference[]>(api.put('/tenants/me/notification-preferences', { preferences })),
 };
 
 // ---------------- Audit ----------------
@@ -179,10 +179,10 @@ export const auditApi = {
 
 // ---------------- Documents ----------------
 export const documentsApi = {
-  list: (studentId: string) => unwrap<SchoolDocument[]>(api.get('/documents', { params: { studentId } })),
+  list: (studentId: string) => unwrap<TenantDocument[]>(api.get('/documents', { params: { studentId } })),
   presign: (body: { studentId: string; fileName: string; mimeType: string; sizeBytes: number; type: string }) =>
     unwrap<PresignResult>(api.post('/documents/presign', body)),
-  confirm: (body: Record<string, unknown>) => unwrap<SchoolDocument>(api.post('/documents/confirm', body)),
+  confirm: (body: Record<string, unknown>) => unwrap<TenantDocument>(api.post('/documents/confirm', body)),
   remove: (id: string) => api.delete(`/documents/${id}`),
 };
 

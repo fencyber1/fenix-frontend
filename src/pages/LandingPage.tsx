@@ -101,7 +101,7 @@ export function LandingPage() {
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── Hero words animation ──
-  const heroWords = 'Run your school with clarity.'.split(' ');
+  const heroWords = 'Run your tenant with clarity.'.split(' ');
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-2">
@@ -192,7 +192,7 @@ export function LandingPage() {
           Everything you need
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-content-muted">
-          A complete school management system — no spreadsheets, no guesswork.
+          A complete tenant management system — no spreadsheets, no guesswork.
         </p>
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f, i) => (
@@ -218,7 +218,7 @@ export function LandingPage() {
               transition: prefersReduced ? 'none' : `opacity 400ms ${EASE} 0ms, transform 400ms ${EASE} 0ms`,
             }}
           >
-            Ready to modernize your school?
+            Ready to modernize your tenant?
           </h2>
           <p
             className="mt-4 text-content-muted"

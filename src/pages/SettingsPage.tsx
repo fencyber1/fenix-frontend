@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { authApi, schoolApi } from '@/api/endpoints';
+import { authApi, tenantApi } from '@/api/endpoints';
 import { usePermissions } from '@/hooks/usePermissions';
 import { applyApiError } from '@/lib/formErrors';
 import { changePasswordSchema, type ChangePasswordValues } from '@/features/auth/auth.schemas';
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
 import { Skeleton } from '@/components/ui/Skeleton';
 
-const schoolSchema = z.object({
+const tenantSchema = z.object({
   name: z.string().trim().min(1, 'Required').max(160),
   phone: z.string().trim().max(30).optional().or(z.literal('')),
   email: z.string().trim().email('Valid email').optional().or(z.literal('')),
@@ -23,7 +23,7 @@ const schoolSchema = z.object({
   timezone: z.string().trim().max(60),
   academicYearStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD'),
 });
-type SchoolValues = z.infer<typeof schoolSchema>;
+type TenantValues = z.infer<typeof tenantSchema>;
 
 const NOTIF_TYPES: { type: NotificationType; label: string }[] = [
   { type: 'ATTENDANCE_ALERT', label: 'Attendance alerts' },
@@ -38,24 +38,24 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Settings" description="Manage your school profile, notifications and security." />
-      {isAdmin && <SchoolProfileCard />}
+      <PageHeader title="Settings" description="Manage your tenant profile, notifications and security." />
+      {isAdmin && <TenantProfileCard />}
       <NotificationPreferencesCard />
       <ChangePasswordCard />
     </div>
   );
 }
 
-function SchoolProfileCard() {
+function TenantProfileCard() {
   const qc = useQueryClient();
-  const { data, isLoading } = useQuery({ queryKey: ['school'], queryFn: () => schoolApi.get() });
+  const { data, isLoading } = useQuery({ queryKey: ['tenant'], queryFn: () => tenantApi.get() });
   const {
     register,
     handleSubmit,
     reset,
     setError,
     formState: { errors, isSubmitting, isDirty },
-  } = useForm<SchoolValues>({ resolver: zodResolver(schoolSchema) });
+  } = useForm<TenantValues>({ resolver: zodResolver(tenantSchema) });
 
   useEffect(() => {
     if (data) {
@@ -71,23 +71,23 @@ function SchoolProfileCard() {
   }, [data, reset]);
 
   const mutation = useMutation({
-    mutationFn: (values: SchoolValues) => schoolApi.update({ ...values, phone: values.phone || null, email: values.email || null, address: values.address || null }),
+    mutationFn: (values: TenantValues) => tenantApi.update({ ...values, phone: values.phone || null, email: values.email || null, address: values.address || null }),
     onSuccess: () => {
-      toast.success('School profile updated');
-      qc.invalidateQueries({ queryKey: ['school'] });
+      toast.success('Tenant profile updated');
+      qc.invalidateQueries({ queryKey: ['tenant'] });
     },
     onError: (err) => applyApiError(err, setError),
   });
 
   return (
     <Card>
-      <CardHeader title="School profile" subtitle="Basic information about your institution." />
+      <CardHeader title="Tenant profile" subtitle="Basic information about your institution." />
       <CardBody>
         {isLoading ? (
           <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-10" />)}</div>
         ) : (
           <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4" noValidate>
-            <Input label="School name" error={errors.name?.message} {...register('name')} />
+            <Input label="Tenant name" error={errors.name?.message} {...register('name')} />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input label="Phone" error={errors.phone?.message} {...register('phone')} />
               <Input label="Email" type="email" error={errors.email?.message} {...register('email')} />
@@ -109,7 +109,7 @@ function SchoolProfileCard() {
 
 function NotificationPreferencesCard() {
   const qc = useQueryClient();
-  const { data, isLoading } = useQuery({ queryKey: ['notif-prefs'], queryFn: () => schoolApi.getPreferences() });
+  const { data, isLoading } = useQuery({ queryKey: ['notif-prefs'], queryFn: () => tenantApi.getPreferences() });
   const [prefs, setPrefs] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -125,7 +125,7 @@ function NotificationPreferencesCard() {
         const [type, channel] = key.split(':');
         return { type: type as string, channel: channel as string, enabled };
       });
-      return schoolApi.setPreferences(preferences);
+      return tenantApi.setPreferences(preferences);
     },
     onSuccess: () => {
       toast.success('Notification preferences saved');
