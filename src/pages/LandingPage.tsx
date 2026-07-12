@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/Button';
+import DotField from '@/components/ui/DotField';
 
 const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -122,6 +123,19 @@ export function LandingPage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-800 text-white">
+        <div className="absolute inset-0">
+          <DotField
+            dotRadius={1.5}
+            dotSpacing={14}
+            bulgeStrength={67}
+            glowRadius={160}
+            sparkle={false}
+            waveAmplitude={0}
+            gradientFrom="rgba(20, 184, 166, 0.15)"
+            gradientTo="rgba(245, 158, 11, 0.08)"
+            glowColor="#120F17"
+          />
+        </div>
         <div
           className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl"
           style={{

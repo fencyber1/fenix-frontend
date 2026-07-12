@@ -271,3 +271,42 @@ export interface PresignResult {
   publicUrl: string;
   expiresIn: number;
 }
+
+export interface StudentDashboardData {
+  kpis: {
+    attendanceToday: string;
+    averageGrade: number;
+    pendingFees: number;
+    myClass: string;
+  };
+  recentGrades: {
+    subject: string;
+    score: string;
+    maxScore: string;
+    gradeLetter: string;
+    term: string;
+    recordedAt: string;
+  }[];
+  upcomingFees: {
+    id: string;
+    invoiceNumber: string;
+    feeName: string;
+    amount: number;
+    amountPaid: number;
+    dueDate: string;
+    status: InvoiceStatus;
+  }[];
+}
+
+export interface ParentDashboardData {
+  children: {
+    id: string;
+    name: string;
+    studentNumber: string;
+    className: string;
+    attendanceToday: string;
+    averageGrade: number;
+    pendingFees: number;
+  }[];
+  overallPendingFees: number;
+}

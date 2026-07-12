@@ -20,6 +20,8 @@ import type {
   TenantDocument,
   Staff,
   Student,
+  StudentDashboardData,
+  ParentDashboardData,
   Subject,
 } from '@/types/models';
 
@@ -199,4 +201,6 @@ export const documentsApi = {
 // ---------------- Dashboard ----------------
 export const dashboardApi = {
   get: () => unwrap<DashboardData>(api.get('/dashboard')),
+  getStudent: () => unwrap<StudentDashboardData>(api.get('/dashboard/student')),
+  getParent: () => unwrap<ParentDashboardData>(api.get('/dashboard/parent')),
 };
