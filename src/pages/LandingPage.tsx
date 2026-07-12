@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/Button';
 import DotField from '@/components/ui/DotField';
+import RotatingText from '@/components/ui/RotatingText';
 
 const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -178,8 +179,24 @@ export function LandingPage() {
                 : `fadeInUp 500ms ${EASE_OUT} 700ms forwards`,
             }}
           >
-            Students, attendance, grades, and fees — unified in one secure, real-time
-            platform built for modern schools.
+            <RotatingText
+              texts={[
+                'Students, attendance, grades, and fees — unified in one secure, real-time platform built for modern schools.',
+                'From enrollment to graduation — every tool your school needs, in one place.',
+                'Attendance, report cards, and fee tracking — automated so you can focus on teaching.',
+                'Give teachers, students, and parents real-time access to everything they need.',
+              ]}
+              splitBy="words"
+              mainClassName="inline"
+              splitLevelClassName="inline-block"
+              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+              staggerFrom="first"
+              staggerDuration={0.02}
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '-100%', opacity: 0 }}
+              rotationInterval={5000}
+            />
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link to="/register">
