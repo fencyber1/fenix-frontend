@@ -113,7 +113,7 @@ export function LoginPage() {
               {/* School ID — always shown */}
               <Input
                 label="School ID"
-                placeholder="e.g. SCH-001"
+                placeholder={selectedRole === 'TEACHER' ? 'e.g. SCH-001' : selectedRole === 'STUDENT' ? 'e.g. SCH-001' : 'e.g. SCH-001'}
                 error={errors.schoolId?.message}
                 {...register('schoolId')}
               />
@@ -170,6 +170,17 @@ export function LoginPage() {
               Choose your role above to continue.
             </p>
           )}
+
+          {/* Test credentials helper */}
+          <div className="mt-6 rounded-xl border border-border bg-surface-2 p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-content-subtle">Test Credentials</p>
+            <div className="space-y-1.5 text-xs text-content-muted">
+              <p><span className="font-medium text-content">School ID:</span> SCH-001</p>
+              <p><span className="font-medium text-content">Teacher:</span> teacher@test.com / Test1234!</p>
+              <p><span className="font-medium text-content">Student:</span> student@test.com / Test1234! <span className="text-content-subtle">(Class ID: CLS-001)</span></p>
+              <p><span className="font-medium text-content">Parent:</span> parent@test.com / Test1234! <span className="text-content-subtle">(Student ID: STU-001)</span></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
