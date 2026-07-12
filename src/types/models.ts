@@ -274,11 +274,30 @@ export interface PresignResult {
 
 export interface StudentDashboardData {
   kpis: {
+    firstName: string;
     attendanceToday: string;
     averageGrade: number;
     pendingFees: number;
     myClass: string;
+    totalTasks: number;
   };
+  subjectPerformance: {
+    subject: string;
+    code: string;
+    score: number;
+    teacherName: string;
+  }[];
+  subjectAttendance: {
+    subject: string;
+    code: string;
+    percentage: number;
+  }[];
+  teachers: {
+    firstName: string;
+    lastName: string;
+    role: string;
+    subject: string;
+  }[];
   recentGrades: {
     subject: string;
     score: string;
