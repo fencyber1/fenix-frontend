@@ -153,16 +153,16 @@ export function ParentDashboard() {
                     </div>
                   </div>
 
-                  {child.subjects.length > 0 && (
+                  {(child.subjects ?? []).length > 0 && (
                     <div className="mt-3 border-t border-border pt-3">
                       <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-content-subtle">Subjects</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {child.subjects.slice(0, 4).map((sub, i) => (
+                        {(child.subjects ?? []).slice(0, 4).map((sub, i) => (
                           <span key={i} className="rounded-md bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-600">
                             {sub.code}
                           </span>
                         ))}
-                        {child.subjects.length > 4 && (
+                        {(child.subjects ?? []).length > 4 && (
                           <span className="rounded-md bg-surface-3 px-2 py-0.5 text-[10px] font-medium text-content-muted">
                             +{child.subjects.length - 4} more
                           </span>
@@ -171,11 +171,11 @@ export function ParentDashboard() {
                     </div>
                   )}
 
-                  {child.recentGrades.length > 0 && (
+                  {(child.recentGrades ?? []).length > 0 && (
                     <div className="mt-3 border-t border-border pt-3">
                       <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-content-subtle">Recent Grades</p>
                       <div className="space-y-1.5">
-                        {child.recentGrades.slice(0, 3).map((gr, i) => {
+                        {(child.recentGrades ?? []).slice(0, 3).map((gr, i) => {
                           const pct = Math.round((Number(gr.score) / Number(gr.maxScore)) * 100);
                           return (
                             <div key={i} className="flex items-center justify-between text-xs">
