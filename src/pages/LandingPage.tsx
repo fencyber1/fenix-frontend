@@ -163,7 +163,7 @@ export function LandingPage() {
             platform built for modern schools.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
-            <Link to="/login">
+            <Link to="/register">
               <span
                 className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97] active:transition-duration-[80ms]"
                 style={{
@@ -230,7 +230,7 @@ export function LandingPage() {
           >
             Sign in to access your dashboard and start managing your institution today.
           </p>
-          <Link to="/login" className="mt-8 inline-block">
+          <Link to="/register" className="mt-8 inline-block">
             <span
               className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97]"
               style={{

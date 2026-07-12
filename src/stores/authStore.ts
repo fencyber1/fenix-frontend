@@ -9,6 +9,13 @@ interface AuthState {
   setSession: (token: string, user: AuthUser) => void;
   bootstrap: () => Promise<void>;
   login: (email: string, password: string) => Promise<AuthUser>;
+  registerSchool: (payload: {
+    schoolName: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  }) => Promise<AuthUser>;
   logout: () => Promise<void>;
   clear: () => void;
 }
@@ -40,6 +47,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email, password) => {
     const { accessToken, user } = await authApi.login(email, password);
+    setAccessToken(accessToken);
+    set({ user, status: 'authenticated' });
+    return user;
+  },
+
+  registerSchool: async (payload) => {
+    const { accessToken, user } = await authApi.register(payload);
     setAccessToken(accessToken);
     set({ user, status: 'authenticated' });
     return user;

@@ -38,6 +38,16 @@ export const authApi = {
     unwrap<{ accessToken: string; user: AuthUser }>(
       api.post('/auth/login', { email, password }),
     ),
+  register: (payload: {
+    schoolName: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  }) =>
+    unwrap<{ accessToken: string; user: AuthUser }>(
+      api.post('/auth/register', payload),
+    ),
   logout: () => api.post('/auth/logout', {}),
   me: () => unwrap<AuthUser>(api.get('/auth/me')),
   forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
