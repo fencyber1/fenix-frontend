@@ -60,6 +60,27 @@ export const authApi = {
     api.post('/auth/change-password', { currentPassword, newPassword }),
 };
 
+// ---------------- Invitations ----------------
+export const invitationsApi = {
+  validate: (token: string) =>
+    unwrap<{ valid: boolean; role?: string; email?: string; name?: string; schoolName?: string; roleData?: Record<string, unknown> }>(
+      api.get('/invitations/validate', { params: { token } }),
+    ),
+  register: (payload: { token: string; password: string; phone?: string; location?: string }) =>
+    unwrap<{ userId: string; role: string; tenantId: string; displayId: string }>(
+      api.post('/invitations/register', payload),
+    ),
+  list: (params: { role?: string; status?: string; page?: number; limit?: number }) =>
+    unwrapPaged<{ id: string; role: string; email: string; name: string; status: string; expiresAt: string; usedAt: string | null; createdAt: string }>(
+      api.get('/invitations', { params }),
+    ),
+  invite: (body: { role: string; email: string; name: string; roleData?: Record<string, unknown> }) =>
+    unwrap<{ token: string; inviteUrl: string; expiresAt: string }>(
+      api.post('/invitations', body),
+    ),
+  revoke: (id: string) => api.delete(`/invitations/${id}`),
+};
+
 // ---------------- Students ----------------
 export interface StudentListParams {
   page?: number;

@@ -1,129 +1,248 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { useAuthStore } from '@/stores/authStore';
-import { applyApiError } from '@/lib/formErrors';
-import { homeForRole } from '@/lib/roles';
-import { registerSchema, type RegisterValues } from '@/features/auth/auth.schemas';
+import { useState, useEffect } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { invitationsApi } from '@/api/endpoints';
 import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
-import { Logo } from '@/components/layout/Logo';
+import { Card, CardBody } from '@/components/ui/Card';
+
+type TokenState = 'loading' | 'valid' | 'invalid';
+type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 export function SignUpPage() {
-  const registerSchool = useAuthStore((s) => s.registerSchool);
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterValues>({ resolver: zodResolver(registerSchema) });
+  const [tokenState, setTokenState] = useState<TokenState>('loading');
+  const [role, setRole] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [schoolName, setSchoolName] = useState('');
+  const [roleData, setRoleData] = useState<Record<string, unknown>>({});
 
-  const onSubmit = async (values: RegisterValues) => {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [location, setLocation] = useState('');
+  const [formState, setFormState] = useState<FormState>('idle');
+  const [error, setError] = useState('');
+  const [displayId, setDisplayId] = useState('');
+
+  useEffect(() => {
+    if (!token) {
+      setTokenState('invalid');
+      return;
+    }
+    invitationsApi.validate(token)
+      .then((data) => {
+        if (data.valid) {
+          setTokenState('valid');
+          setRole(data.role ?? '');
+          setEmail(data.email ?? '');
+          setName(data.name ?? '');
+          setSchoolName(data.schoolName ?? '');
+          setRoleData(data.roleData ?? {});
+        } else {
+          setTokenState('invalid');
+        }
+      })
+      .catch(() => setTokenState('invalid'));
+  }, [token]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (!token) return;
+
+    setFormState('submitting');
+    setError('');
     try {
-      const user = await registerSchool({
-        schoolName: values.schoolName,
-        email: values.email,
-        password: values.password,
-        firstName: values.firstName,
-        lastName: values.lastName,
+      const result = await invitationsApi.register({
+        token,
+        password,
+        phone: phone || undefined,
+        location: location || undefined,
       });
-      toast.success('Account created! Check your email to verify.');
-      navigate(homeForRole(user.role), { replace: true });
-    } catch (err) {
-      applyApiError(err, setError);
+      setDisplayId(result.displayId);
+      setFormState('success');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Registration failed';
+      setError(msg);
+      setFormState('error');
     }
   };
 
-  return (
-    <div className="flex min-h-screen items-stretch bg-surface-2">
-      {/* Brand panel */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-navy-800 p-12 text-white lg:flex">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl" />
-        <div className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl" />
-        <Logo className="relative [&_span:last-child]:text-white" />
-        <div className="relative max-w-md">
-          <h1 className="font-heading text-4xl font-bold leading-tight">
-            Get started with FenDux.
-          </h1>
-          <p className="mt-4 text-navy-100">
-            Create your school's account in minutes. Manage students, attendance, grades, and fees
-            — all in one secure platform.
-          </p>
-        </div>
-        <p className="relative text-sm text-navy-200">© {new Date().getFullYear()} FenDux SMS</p>
-      </div>
-
-      {/* Form panel */}
-      <div className="flex w-full items-center justify-center p-6 lg:w-1/2">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 lg:hidden">
-            <Logo />
-          </div>
-          <h2 className="font-heading text-2xl font-bold text-content">Create your account</h2>
-          <p className="mt-1 text-sm text-content-muted">Set up your school and admin account.</p>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
-            <Input
-              label="School name"
-              autoComplete="organization"
-              placeholder="e.g. Springfield Academy"
-              error={errors.schoolName?.message}
-              {...register('schoolName')}
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="First name"
-                autoComplete="given-name"
-                placeholder="John"
-                error={errors.firstName?.message}
-                {...register('firstName')}
-              />
-              <Input
-                label="Last name"
-                autoComplete="family-name"
-                placeholder="Doe"
-                error={errors.lastName?.message}
-                {...register('lastName')}
-              />
+  if (!token || tokenState === 'invalid') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface-2 px-4">
+        <Card className="w-full max-w-md">
+          <CardBody className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-danger-500/10">
+              <svg className="h-8 w-8 text-danger-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
             </div>
-            <Input
-              label="Email"
-              type="email"
-              autoComplete="email"
-              placeholder="admin@school.edu"
-              error={errors.email?.message}
-              {...register('email')}
-            />
+            <h2 className="font-heading text-xl font-bold text-content">Invalid Link</h2>
+            <p className="text-sm text-content-muted">
+              This invitation link is invalid or has expired. Please contact your school administrator for a new link.
+            </p>
+            <Link to="/login">
+              <Button variant="primary" className="w-full">Go to Login</Button>
+            </Link>
+          </CardBody>
+        </Card>
+      </div>
+    );
+  }
+
+  if (tokenState === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface-2">
+        <div className="text-sm text-content-muted">Validating invitation...</div>
+      </div>
+    );
+  }
+
+  if (formState === 'success') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface-2 px-4">
+        <Card className="w-full max-w-md">
+          <CardBody className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-500/10">
+              <svg className="h-8 w-8 text-success-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="font-heading text-xl font-bold text-content">Registration Complete!</h2>
+            <p className="text-sm text-content-muted">
+              Your account has been created successfully.
+            </p>
+            <div className="rounded-xl bg-surface-3 px-4 py-3">
+              <p className="text-xs text-content-muted">Your {role === 'TEACHER' ? 'Teacher' : role === 'STUDENT' ? 'Student' : ''} ID</p>
+              <p className="font-heading text-lg font-bold text-teal-600">{displayId}</p>
+            </div>
+            <p className="text-xs text-content-muted">
+              Save this ID — you'll need it to log in.
+            </p>
+            <Link to="/login">
+              <Button variant="primary" className="w-full">Go to Login</Button>
+            </Link>
+          </CardBody>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-surface-2 px-4 py-8">
+      <Card className="w-full max-w-lg">
+        <CardBody>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="font-heading text-2xl font-bold text-content">Complete Registration</h1>
+              <p className="mt-1 text-sm text-content-muted">{schoolName}</p>
+            </div>
+
+            {/* Pre-filled info */}
+            <div className="space-y-3 rounded-xl bg-surface-3 p-4">
+              <div>
+                <label className="text-xs font-medium text-content-muted">Email</label>
+                <p className="text-sm font-medium text-content">{email}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-content-muted">Name</label>
+                <p className="text-sm font-medium text-content">{name}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-content-muted">Role</label>
+                <p className="text-sm font-medium text-content capitalize">{role.toLowerCase()}</p>
+              </div>
+              {role === 'STUDENT' && typeof roleData.classId === 'string' && (
+                <div>
+                  <label className="text-xs font-medium text-content-muted">Class ID</label>
+                  <p className="text-sm font-medium text-content">{roleData.classId}</p>
+                </div>
+              )}
+              {role === 'PARENT' && typeof roleData.studentId === 'string' && (
+                <div>
+                  <label className="text-xs font-medium text-content-muted">Student ID</label>
+                  <p className="text-sm font-medium text-content">{roleData.studentId}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Role-specific fields */}
+            {role === 'TEACHER' && (
+              <>
+                <Input
+                  label="Phone Number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+233..."
+                  required
+                />
+                <Input
+                  label="Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Accra, Ghana"
+                  required
+                />
+              </>
+            )}
+
+            {role === 'STUDENT' && (
+              <Input
+                label="Phone (optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+233..."
+              />
+            )}
+
+            {role === 'PARENT' && (
+              <Input
+                label="Phone (optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+233..."
+              />
+            )}
+
+            {/* Password */}
             <PasswordInput
               label="Password"
-              autoComplete="new-password"
-              placeholder="••••••••••"
-              error={errors.password?.message}
-              {...register('password')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={10}
             />
             <PasswordInput
-              label="Confirm password"
-              autoComplete="new-password"
-              placeholder="••••••••••"
-              error={errors.confirm?.message}
-              {...register('confirm')}
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
             />
-            <Button type="submit" className="w-full" loading={isSubmitting}>
-              Create account
+
+            {error && (
+              <p className="text-sm text-danger-500">{error}</p>
+            )}
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              loading={formState === 'submitting'}
+              disabled={formState === 'submitting'}
+            >
+              Complete Registration
             </Button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-content-muted">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-teal-600 hover:underline dark:text-teal-400">
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }
