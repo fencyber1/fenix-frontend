@@ -14,7 +14,12 @@ export function StudentDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dashboardApi.getStudent().then(setData).catch(() => {}).finally(() => setLoading(false));
+    const controller = new AbortController();
+    dashboardApi.getStudent()
+      .then((d) => { if (!controller.signal.aborted) setData(d); })
+      .catch(() => {})
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   if (loading) {

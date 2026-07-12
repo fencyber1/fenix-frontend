@@ -24,19 +24,21 @@ export default function ChildDetailPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    const controller = new AbortController();
     Promise.all([
       studentsApi.get(id),
       attendanceApi.list({ studentId: id, limit: 10 }),
       gradesApi.list({ studentId: id }),
     ]).then(([s, attRes, gradRes]) => {
+      if (controller.signal.aborted) return;
       setStudent(s);
       setAttendance(attRes.data ?? []);
       setGrades(gradRes.data ?? []);
-      // Fetch subjects for the student's class if enrolled
       return subjectsApi.list({});
     }).then((subRes) => {
-      setSubjects(Array.isArray(subRes) ? subRes : []);
-    }).catch(() => {}).finally(() => setLoading(false));
+      if (!controller.signal.aborted) setSubjects(Array.isArray(subRes) ? subRes : []);
+    }).catch(() => {}).finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, [id]);
 
   if (loading) {

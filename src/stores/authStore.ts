@@ -47,6 +47,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (body) => {
     const { accessToken, user } = await authApi.login(body);
+    if (!accessToken || !user) throw new Error('Invalid authentication response');
     setAccessToken(accessToken);
     set({ user, status: 'authenticated' });
     return user;
@@ -54,6 +55,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   registerSchool: async (payload) => {
     const { accessToken, user } = await authApi.register(payload);
+    if (!accessToken || !user) throw new Error('Invalid registration response');
     setAccessToken(accessToken);
     set({ user, status: 'authenticated' });
     return user;

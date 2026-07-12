@@ -134,8 +134,22 @@ export function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/students" element={<StudentsPage />} />
-          <Route path="/students/:id" element={<StudentProfilePage />} />
+          <Route
+            path="/students"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
+                <StudentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/students/:id"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN', 'TEACHER']}>
+                <StudentProfilePage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/attendance"
             element={
@@ -152,7 +166,14 @@ export function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/fees" element={<Suspense fallback={<PageFallback />}><FeesPage /></Suspense>} />
+          <Route
+            path="/fees"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN']}>
+                <Suspense fallback={<PageFallback />}><FeesPage /></Suspense>
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/classes"
             element={
@@ -225,7 +246,14 @@ export function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/settings" element={<Suspense fallback={<PageFallback />}><SettingsPage /></Suspense>} />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT']}>
+                <Suspense fallback={<PageFallback />}><SettingsPage /></Suspense>
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

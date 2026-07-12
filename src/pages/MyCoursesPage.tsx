@@ -16,7 +16,9 @@ export default function MyCoursesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     dashboardApi.getStudent().then((data) => {
+      if (controller.signal.aborted) return;
       setClassId(data.kpis.classId);
       setClassName(data.kpis.myClass);
       if (data.kpis.classId) {
@@ -24,8 +26,9 @@ export default function MyCoursesPage() {
       }
       return [];
     }).then((subRes) => {
-      setSubjects(Array.isArray(subRes) ? subRes : []);
-    }).catch(() => {}).finally(() => setLoading(false));
+      if (!controller.signal.aborted) setSubjects(Array.isArray(subRes) ? subRes : []);
+    }).catch(() => {}).finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   return (

@@ -62,16 +62,20 @@ export default function ClassDetailPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    const controller = new AbortController();
     Promise.all([
       classesApi.get(id),
       classesApi.roster(id),
       subjectsApi.list({ classId: id }),
     ]).then(([c, r, s]) => {
-      setClassData(c);
-      setRoster(r);
-      setSubjects(Array.isArray(s) ? s : []);
+      if (!controller.signal.aborted) {
+        setClassData(c);
+        setRoster(r);
+        setSubjects(Array.isArray(s) ? s : []);
+      }
     }).catch(() => toast.error('Failed to load class details'))
-      .finally(() => setLoading(false));
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, [id]);
 
   const onInvite = async (values: InviteValues) => {

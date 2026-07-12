@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { authApi } from '@/api/endpoints';
 import { errorMessage } from '@/lib/formErrors';
@@ -11,23 +11,24 @@ export function VerifyEmailPage() {
   const token = params.get('token') ?? '';
   const [state, setState] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-  const ran = useRef(false);
 
   useEffect(() => {
-    if (ran.current) return;
-    ran.current = true;
     if (!token) {
       setState('error');
       setMessage('Verification link is missing a token.');
       return;
     }
+    const controller = new AbortController();
     authApi
       .verifyEmail(token)
-      .then(() => setState('success'))
+      .then(() => { if (!controller.signal.aborted) setState('success'); })
       .catch((err) => {
-        setState('error');
-        setMessage(errorMessage(err));
+        if (!controller.signal.aborted) {
+          setState('error');
+          setMessage(errorMessage(err));
+        }
       });
+    return () => controller.abort();
   }, [token]);
 
   return (

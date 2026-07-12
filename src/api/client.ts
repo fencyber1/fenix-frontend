@@ -47,7 +47,17 @@ export class ApiClientError extends Error {
   }
 }
 
-let refreshPromise: Promise<string | null> | null = null;
+/** Token refresh queue — prevents concurrent refresh calls and race conditions. */
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: (token: string | null) => void; reject: (err: unknown) => void }> = [];
+
+function processQueue(error: unknown, token: string | null = null): void {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else resolve(token);
+  });
+  failedQueue = [];
+}
 
 async function refreshAccessToken(): Promise<string | null> {
   try {
@@ -73,15 +83,36 @@ api.interceptors.response.use(
 
     // Attempt a single transparent refresh on 401 (except for auth routes).
     if (status === 401 && original && !original._retry && !isAuthRoute) {
-      original._retry = true;
-      refreshPromise = refreshPromise ?? refreshAccessToken();
-      const token = await refreshPromise;
-      refreshPromise = null;
-      if (token) {
-        original.headers.Authorization = `Bearer ${token}`;
-        return api(original);
+      if (isRefreshing) {
+        // Queue this request until the refresh completes
+        return new Promise<string | null>((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((token) => {
+          if (token) {
+            original.headers.Authorization = `Bearer ${token}`;
+            return api(original);
+          }
+          throw new ApiClientError(401, { message: 'Session expired' });
+        });
       }
-      onUnauthorized?.();
+
+      original._retry = true;
+      isRefreshing = true;
+
+      try {
+        const token = await refreshAccessToken();
+        processQueue(null, token);
+        if (token) {
+          original.headers.Authorization = `Bearer ${token}`;
+          return api(original);
+        }
+        onUnauthorized?.();
+      } catch (err) {
+        processQueue(err, null);
+        onUnauthorized?.();
+      } finally {
+        isRefreshing = false;
+      }
     }
 
     const body = error.response?.data;

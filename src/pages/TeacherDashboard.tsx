@@ -17,13 +17,17 @@ export function TeacherDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     Promise.all([
       classesApi.list({ page: 1, limit: 100 }).catch(() => ({ data: [], meta: null })),
       subjectsApi.list({}).catch(() => []),
     ]).then(([classRes, subRes]) => {
-      setClasses(classRes.data ?? []);
-      setSubjects(Array.isArray(subRes) ? subRes : []);
-    }).finally(() => setLoading(false));
+      if (!controller.signal.aborted) {
+        setClasses(classRes.data ?? []);
+        setSubjects(Array.isArray(subRes) ? subRes : []);
+      }
+    }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   const totalStudents = classes.reduce((sum, c) => sum + (c._count?.enrollments ?? 0), 0);

@@ -18,7 +18,12 @@ export function ParentDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dashboardApi.getParent().then(setData).catch((err) => { console.error('Parent dashboard error:', err); toast.error('Failed to load dashboard'); }).finally(() => setLoading(false));
+    const controller = new AbortController();
+    dashboardApi.getParent()
+      .then((d) => { if (!controller.signal.aborted) setData(d); })
+      .catch(() => { toast.error('Failed to load dashboard'); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   const totalChildren = data?.children.length ?? 0;

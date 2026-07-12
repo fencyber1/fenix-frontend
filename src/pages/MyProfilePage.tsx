@@ -17,15 +17,18 @@ export default function MyProfilePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     dashboardApi.getStudent()
       .then((data) => {
+        if (controller.signal.aborted) return;
         const sid = data.kpis.studentId;
         if (!sid) return;
         return api.get(`/students/${sid}`).then((res) => res.data.data as Student);
       })
-      .then((s) => { if (s) setStudent(s); })
+      .then((s) => { if (!controller.signal.aborted && s) setStudent(s); })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   if (loading) {

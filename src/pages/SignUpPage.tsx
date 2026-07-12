@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { invitationsApi } from '@/api/endpoints';
+import { passwordSchema } from '@/features/auth/auth.schemas';
 import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
 import { Card, CardBody } from '@/components/ui/Card';
@@ -32,8 +33,10 @@ export function SignUpPage() {
       setTokenState('invalid');
       return;
     }
+    const controller = new AbortController();
     invitationsApi.validate(token)
       .then((data) => {
+        if (controller.signal.aborted) return;
         if (data.valid) {
           setTokenState('valid');
           setRole(data.role ?? '');
@@ -45,13 +48,19 @@ export function SignUpPage() {
           setTokenState('invalid');
         }
       })
-      .catch(() => setTokenState('invalid'));
+      .catch(() => { if (!controller.signal.aborted) setTokenState('invalid'); });
+    return () => controller.abort();
   }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+    const passwordResult = passwordSchema.safeParse(password);
+    if (!passwordResult.success) {
+      setError(passwordResult.error.issues[0]?.message ?? 'Password does not meet requirements');
       return;
     }
     if (!token) return;

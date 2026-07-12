@@ -55,16 +55,18 @@ export function GradesPage() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       const targets = (roster ?? []).filter((s) => entries[s.id]?.score !== undefined && entries[s.id]?.score !== '');
-      for (const s of targets) {
-        const e = entries[s.id]!;
-        await gradesApi.upsert({
-          studentId: s.id,
-          subjectId,
-          term,
-          score: Number(e.score),
-          maxScore: Number(e.maxScore || 100),
-        });
-      }
+      await Promise.all(
+        targets.map((s) => {
+          const e = entries[s.id]!;
+          return gradesApi.upsert({
+            studentId: s.id,
+            subjectId,
+            term,
+            score: Number(e.score),
+            maxScore: Number(e.maxScore) || 100,
+          });
+        }),
+      );
       return targets.length;
     },
     onSuccess: (count) => {
@@ -139,7 +141,8 @@ export function GradesPage() {
               <tbody>
                 {roster?.map((s) => {
                   const e = entries[s.id] ?? { score: '', maxScore: '100' };
-                  const pct = e.score && e.maxScore ? Math.round((Number(e.score) / Number(e.maxScore)) * 1000) / 10 : null;
+                  const max = Number(e.maxScore) || 100;
+                  const pct = e.score && max > 0 ? Math.round((Number(e.score) / max) * 1000) / 10 : null;
                   return (
                     <tr key={s.id} className="border-b border-border last:border-0">
                       <td className="px-5 py-2.5">
