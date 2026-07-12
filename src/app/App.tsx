@@ -27,6 +27,9 @@ const FeesPage = lazy(() => import('@/pages/FeesPage').then((m) => ({ default: m
 const ClassesPage = lazy(() => import('@/pages/ClassesPage').then((m) => ({ default: m.ClassesPage })));
 const StaffPage = lazy(() => import('@/pages/StaffPage').then((m) => ({ default: m.StaffPage })));
 const TenantsPage = lazy(() => import('@/pages/TenantsPage').then((m) => ({ default: m.TenantsPage })));
+const UsersPage = lazy(() => import('@/pages/UsersPage').then((m) => ({ default: m.UsersPage })));
+const InviteUserPage = lazy(() => import('@/pages/InviteUserPage').then((m) => ({ default: m.InviteUserPage })));
+const InvitationsPage = lazy(() => import('@/pages/InvitationsPage').then((m) => ({ default: m.InvitationsPage })));
 const ReportsPage = lazy(() => import('@/pages/ReportsPage').then((m) => ({ default: m.ReportsPage })));
 const AuditPage = lazy(() => import('@/pages/AuditPage').then((m) => ({ default: m.AuditPage })));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
@@ -142,6 +145,30 @@ export function App() {
             element={
               <ProtectedRoute roles={['SUPER_ADMIN']}>
                 <Suspense fallback={<PageFallback />}><TenantsPage /></Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN']}>
+                <Suspense fallback={<PageFallback />}><UsersPage /></Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/invite"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN']}>
+                <Suspense fallback={<PageFallback />}><InviteUserPage /></Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/invitations"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN', 'ADMIN']}>
+                <Suspense fallback={<PageFallback />}><InvitationsPage /></Suspense>
               </ProtectedRoute>
             }
           />

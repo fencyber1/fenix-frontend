@@ -23,6 +23,7 @@ export interface Student {
   id: string;
   tenantId: string;
   userId: string | null;
+  displayId: string | null;
   studentNumber: string;
   firstName: string;
   lastName: string;
@@ -70,6 +71,7 @@ export interface Staff {
   id: string;
   userId: string;
   tenantId: string;
+  displayId: string | null;
   employeeNumber: string;
   firstName: string;
   lastName: string;
