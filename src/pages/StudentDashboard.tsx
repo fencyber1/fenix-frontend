@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { CircularProgress } from '@/components/ui/CircularProgress';
 import { BarChart } from '@/components/ui/BarChart';
 import { Avatar } from '@/components/ui/Avatar';
+import { Button } from '@/components/ui/Button';
 import { dashboardApi } from '@/api/endpoints';
 import type { StudentDashboardData } from '@/types/models';
 import { IconAttendance, IconFees } from '@/components/ui/icons';
@@ -35,7 +37,22 @@ export function StudentDashboard() {
 
   return (
     <>
-      <PageHeader title="Student Dashboard" description={`Welcome back, ${firstName}`} />
+      <PageHeader
+        title="Student Dashboard"
+        description={`Welcome back, ${firstName}`}
+        actions={
+          <div className="flex gap-2">
+            <Link to="/my-courses">
+              <Button variant="outline">My Courses</Button>
+            </Link>
+            {data?.kpis.studentId && (
+              <Link to={`/students/${data.kpis.studentId}`}>
+                <Button>My Profile</Button>
+              </Link>
+            )}
+          </div>
+        }
+      />
 
       {/* ── Welcome Banner ── */}
       <div className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-[#3b4f9e] via-[#4a5fba] to-[#6b7fd4] p-6 sm:p-8">

@@ -29,6 +29,7 @@ export interface Student {
   lastName: string;
   dob: string | null;
   gender: Gender;
+  phone: string | null;
   photoUrl: string | null;
   admissionDate: string | null;
   status: StudentStatus;
@@ -278,11 +279,13 @@ export interface PresignResult {
 
 export interface StudentDashboardData {
   kpis: {
+    studentId: string;
     firstName: string;
     attendanceToday: string;
     averageGrade: number;
     pendingFees: number;
     myClass: string;
+    classId: string | null;
     totalTasks: number;
   };
   subjectPerformance: {
