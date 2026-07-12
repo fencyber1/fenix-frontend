@@ -14,9 +14,9 @@ export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email('Enter a valid email'),
   password: z.string().min(1, 'Password is required'),
   role: z.enum(['TEACHER', 'STUDENT', 'PARENT']).optional(),
-  schoolId: z.string().trim().min(1, 'School ID is required').max(50).optional(),
-  classId: z.string().trim().min(1).max(50).optional(),
-  studentId: z.string().trim().min(1).max(50).optional(),
+  schoolId: z.string().trim().max(50).optional(),
+  classId: z.string().trim().max(50).optional(),
+  studentId: z.string().trim().max(50).optional(),
 }).superRefine((v, ctx) => {
   if (!v.role) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Select a role', path: ['role'] });

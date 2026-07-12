@@ -34,7 +34,7 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { role: undefined, schoolId: '', classId: '', studentId: '' },
+    defaultValues: { role: undefined, email: '', password: '', schoolId: '', classId: '', studentId: '' },
   });
 
   useEffect(() => {
@@ -119,6 +119,10 @@ export function LoginPage() {
               </button>
             ))}
           </div>
+
+          {errors.role && (
+            <p className="mt-2 text-center text-sm text-danger-500">{errors.role.message}</p>
+          )}
 
           {selectedRole && (
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
