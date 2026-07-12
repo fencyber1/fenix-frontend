@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,21 +10,43 @@ import { loginSchema, type LoginValues } from '@/features/auth/auth.schemas';
 import { Button } from '@/components/ui/Button';
 import { Input, PasswordInput } from '@/components/ui/Input';
 import { Logo } from '@/components/layout/Logo';
+import { IconStudents, IconGrades, IconStaff } from '@/components/ui/icons';
+import { cn } from '@/lib/utils';
+
+type RoleTab = 'TEACHER' | 'STUDENT' | 'PARENT';
+
+const ROLES: { key: RoleTab; label: string; icon: React.ReactNode; desc: string }[] = [
+  { key: 'TEACHER', label: 'Teacher', icon: <IconStaff />, desc: 'Staff member' },
+  { key: 'STUDENT', label: 'Student', icon: <IconStudents />, desc: 'Enrolled student' },
+  { key: 'PARENT', label: 'Parent', icon: <IconGrades />, desc: 'Parent / Guardian' },
+];
 
 export function LoginPage() {
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState<RoleTab | null>(null);
 
   const {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) });
+  } = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { role: undefined, schoolId: '', classId: '', studentId: '' },
+  });
 
   const onSubmit = async (values: LoginValues) => {
     try {
-      const user = await login(values.email, values.password);
+      const user = await login({
+        email: values.email,
+        password: values.password,
+        role: selectedRole ?? undefined,
+        schoolId: values.schoolId || undefined,
+        classId: values.classId || undefined,
+        studentId: values.studentId || undefined,
+      });
       toast.success('Welcome back');
       navigate(homeForRole(user.role), { replace: true });
     } catch (err) {
@@ -52,38 +75,101 @@ export function LoginPage() {
 
       {/* Form panel */}
       <div className="flex w-full items-center justify-center p-6 lg:w-1/2">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
             <Logo />
           </div>
           <h2 className="font-heading text-2xl font-bold text-content">Sign in</h2>
-          <p className="mt-1 text-sm text-content-muted">Enter your credentials to continue.</p>
+          <p className="mt-1 text-sm text-content-muted">Select your role and enter your credentials.</p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
-            <Input
-              label="Email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@tenant.edu"
-              error={errors.email?.message}
-              {...register('email')}
-            />
-            <PasswordInput
-              label="Password"
-              autoComplete="current-password"
-              placeholder="••••••••••"
-              error={errors.password?.message}
-              {...register('password')}
-            />
-            <div className="flex justify-end">
-              <Link to="/forgot-password" className="text-sm font-medium text-teal-600 hover:underline dark:text-teal-400">
-                Forgot password?
-              </Link>
-            </div>
-            <Button type="submit" className="w-full" loading={isSubmitting}>
-              Sign in
-            </Button>
-          </form>
+          {/* Role selector */}
+          <div className="mt-6 grid grid-cols-3 gap-3">
+            {ROLES.map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => setSelectedRole(r.key)}
+                className={cn(
+                  'flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all',
+                  selectedRole === r.key
+                    ? 'border-teal-500 bg-teal-500/8 shadow-sm'
+                    : 'border-border bg-surface hover:border-teal-500/40 hover:bg-surface-2',
+                )}
+              >
+                <span className={cn(
+                  'flex h-10 w-10 items-center justify-center rounded-lg',
+                  selectedRole === r.key ? 'bg-teal-500/16 text-teal-600' : 'bg-surface-3 text-content-muted',
+                )}>
+                  {r.icon}
+                </span>
+                <span className="text-sm font-semibold text-content">{r.label}</span>
+                <span className="text-[10px] text-content-subtle">{r.desc}</span>
+              </button>
+            ))}
+          </div>
+
+          {selectedRole && (
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4" noValidate>
+              {/* School ID — always shown */}
+              <Input
+                label="School ID"
+                placeholder="e.g. SCH-001"
+                error={errors.schoolId?.message}
+                {...register('schoolId')}
+              />
+
+              {/* Class ID — student only */}
+              {selectedRole === 'STUDENT' && (
+                <Input
+                  label="Class ID"
+                  placeholder="e.g. CLS-001"
+                  error={errors.classId?.message}
+                  {...register('classId')}
+                />
+              )}
+
+              {/* Student ID — parent only */}
+              {selectedRole === 'PARENT' && (
+                <Input
+                  label="Student ID"
+                  placeholder="e.g. STU-001"
+                  error={errors.studentId?.message}
+                  {...register('studentId')}
+                />
+              )}
+
+              <Input
+                label="Email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@school.edu"
+                error={errors.email?.message}
+                {...register('email')}
+              />
+              <PasswordInput
+                label="Password"
+                autoComplete="current-password"
+                placeholder="••••••••••"
+                error={errors.password?.message}
+                {...register('password')}
+              />
+
+              <div className="flex justify-end">
+                <Link to="/forgot-password" className="text-sm font-medium text-teal-600 hover:underline dark:text-teal-400">
+                  Forgot password?
+                </Link>
+              </div>
+              <Button type="submit" className="w-full" loading={isSubmitting}>
+                Sign in as {ROLES.find((r) => r.key === selectedRole)?.label}
+              </Button>
+            </form>
+          )}
+
+          {!selectedRole && (
+            <p className="mt-8 text-center text-sm text-content-muted">
+              Choose your role above to continue.
+            </p>
+          )}
         </div>
       </div>
     </div>

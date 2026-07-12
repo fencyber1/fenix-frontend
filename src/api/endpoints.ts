@@ -36,9 +36,9 @@ async function unwrapPaged<T>(
 
 // ---------------- Auth ----------------
 export const authApi = {
-  login: (email: string, password: string) =>
+  login: (body: { email: string; password: string; role?: string; schoolId?: string; classId?: string; studentId?: string }) =>
     unwrap<{ accessToken: string; user: AuthUser }>(
-      api.post('/auth/login', { email, password }),
+      api.post('/auth/login', body),
     ),
   register: (payload: {
     schoolName: string;

@@ -13,6 +13,20 @@ export const passwordSchema = z
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email('Enter a valid email'),
   password: z.string().min(1, 'Password is required'),
+  role: z.enum(['TEACHER', 'STUDENT', 'PARENT']).optional(),
+  schoolId: z.string().trim().min(1, 'School ID is required').max(50).optional(),
+  classId: z.string().trim().min(1).max(50).optional(),
+  studentId: z.string().trim().min(1).max(50).optional(),
+}).superRefine((v, ctx) => {
+  if (v.role === 'TEACHER' && !v.schoolId) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
+  }
+  if (v.role === 'STUDENT') {
+    if (!v.schoolId) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
+  }
+  if (v.role === 'PARENT') {
+    if (!v.schoolId) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'School ID is required', path: ['schoolId'] });
+  }
 });
 
 export const registerSchema = z

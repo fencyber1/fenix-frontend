@@ -8,7 +8,7 @@ interface AuthState {
   status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated';
   setSession: (token: string, user: AuthUser) => void;
   bootstrap: () => Promise<void>;
-  login: (email: string, password: string) => Promise<AuthUser>;
+  login: (body: { email: string; password: string; role?: string; schoolId?: string; classId?: string; studentId?: string }) => Promise<AuthUser>;
   registerSchool: (payload: {
     schoolName: string;
     email: string;
@@ -45,8 +45,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  login: async (email, password) => {
-    const { accessToken, user } = await authApi.login(email, password);
+  login: async (body) => {
+    const { accessToken, user } = await authApi.login(body);
     setAccessToken(accessToken);
     set({ user, status: 'authenticated' });
     return user;
