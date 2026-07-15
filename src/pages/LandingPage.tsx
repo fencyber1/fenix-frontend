@@ -210,7 +210,7 @@ export function LandingPage() {
                 'Run your tenant with clarity.',
                 'Empower your school.',
                 'Manage with confidence.',
-                'Everything in one place.',
+                'Future-proof your school.',
               ]}
               splitBy="words"
               mainClassName="inline"
@@ -236,10 +236,10 @@ export function LandingPage() {
           >
             <RotatingText
               texts={[
-                'Students, attendance, grades, and fees — unified in one secure, real-time platform built for modern schools.',
-                'From enrollment to graduation — every tool your school needs, in one place.',
-                'Attendance, report cards, and fee tracking — automated so you can focus on teaching.',
-                'Give teachers, students, and parents real-time access to everything they need.',
+                'Transform your institution — modernize with technology built for education.',
+                'Save time, gain results — automate routine tasks and reclaim hours in your week.',
+                'Support every stakeholder — students, teachers, parents, and administrators in one ecosystem.',
+                'Built to grow and adapt with your changing needs.',
               ]}
               splitBy="words"
               mainClassName="inline"
