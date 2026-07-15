@@ -41,7 +41,8 @@ export default function RotatingImage({
     }, 350);
   };
 
-  const current = images[index];
+  if (!images.length) return null;
+  const current = images[index]!;
 
   return (
     <div className="relative w-full select-none">
