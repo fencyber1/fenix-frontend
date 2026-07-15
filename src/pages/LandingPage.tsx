@@ -4,6 +4,7 @@ import { Logo } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/Button';
 import DotField from '@/components/ui/DotField';
 import RotatingText from '@/components/ui/RotatingText';
+import RotatingImage from '@/components/ui/RotatingImage';
 
 const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -63,6 +64,13 @@ const FEATURES = [
       </svg>
     ),
   },
+];
+
+const DASHBOARD_IMAGES = [
+  { src: '/hero-dashboard.jpg', alt: 'FenDux dashboard overview', label: 'Dashboard Overview', color: '#14b8a6' },
+  { src: '/hero-analytics.jpg', alt: 'Student analytics and performance', label: 'Student Analytics', color: '#f59e0b' },
+  { src: '/hero-reports.jpg', alt: 'Grades and report cards', label: 'Grades & Reports', color: '#6366f1' },
+  { src: '/hero-charts.jpg', alt: 'Fee tracking and financial insights', label: 'Fee Tracking', color: '#10b981' },
 ];
 
 function useScrollReveal(threshold = 0.15) {
@@ -302,11 +310,9 @@ export function LandingPage() {
                     app.fendux.com/dashboard
                   </div>
                 </div>
-                <img
-                  src="/hero-dashboard.jpg"
-                  alt="FenDux dashboard preview"
-                  className="block w-full object-cover"
-                  style={{ maxHeight: 380 }}
+                <RotatingImage
+                  images={DASHBOARD_IMAGES}
+                  interval={4500}
                 />
               </div>
             </div>
