@@ -81,8 +81,15 @@ function useScrollReveal(threshold = 0.15) {
   return { ref, visible };
 }
 
+const UNLOCK_CODE = 'PAYMENT';
+
 export function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
+  const [isLocked, setIsLocked] = useState(() => {
+    return localStorage.getItem('landing-unlocked') !== 'true';
+  });
+  const [codeInput, setCodeInput] = useState('');
+  const [codeError, setCodeError] = useState('');
   const { ref: featRef, visible: featVisible } = useScrollReveal(0.1);
   const { ref: ctaRef, visible: ctaVisible } = useScrollReveal(0.2);
   const { ref: footRef, visible: footVisible } = useScrollReveal(0.3);
@@ -102,11 +109,56 @@ export function LandingPage() {
   const px = scrollY * 0.04;
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── Hero words animation ──
-  const heroWords = 'Run your tenant with clarity.'.split(' ');
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (codeInput.trim().toUpperCase() === UNLOCK_CODE) {
+      localStorage.setItem('landing-unlocked', 'true');
+      setIsLocked(false);
+      setCodeError('');
+    } else {
+      setCodeError('Invalid code. Access denied.');
+      setCodeInput('');
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-2">
+      {/* Lock Overlay */}
+      {isLocked && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-navy-800/95 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-2xl border border-content/10 bg-surface p-8 shadow-2xl">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10">
+                <svg className="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+              </div>
+              <h2 className="font-heading text-xl font-bold text-content">Access Restricted</h2>
+              <p className="mt-2 text-sm text-content-muted">Enter your access code to unlock this page.</p>
+            </div>
+            <form onSubmit={handleUnlock} className="mt-6 space-y-4">
+              <input
+                type="text"
+                value={codeInput}
+                onChange={(e) => { setCodeInput(e.target.value); setCodeError(''); }}
+                placeholder="Enter access code"
+                autoFocus
+                className="w-full rounded-xl border border-content/15 bg-surface-2 px-4 py-3 text-center font-mono text-sm tracking-widest text-content placeholder:text-content-muted/50 outline-none transition focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+              />
+              {codeError && (
+                <p className="text-center text-xs text-red-500">{codeError}</p>
+              )}
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-teal-500 hover:shadow-lg active:scale-[0.97]"
+              >
+                Unlock
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <header className="sticky top-0 z-30 border-b border-content/10 bg-surface-2/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -153,21 +205,24 @@ export function LandingPage() {
         />
         <div className="relative mx-auto max-w-6xl px-6 py-24 text-center lg:py-32">
           <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            {heroWords.map((word, i) => (
-              <span
-                key={i}
-                className="inline-block"
-                style={{
-                  opacity: 0,
-                  transform: 'translateY(14px)',
-                  animation: prefersReduced
-                    ? 'none'
-                    : `fadeInUp 350ms ${EASE_OUT} ${i * 300}ms forwards`,
-                }}
-              >
-                {word}{i < heroWords.length - 1 && '\u00A0'}
-              </span>
-            ))}
+            <RotatingText
+              texts={[
+                'Run your tenant with clarity.',
+                'Empower your school.',
+                'Manage with confidence.',
+                'Everything in one place.',
+              ]}
+              splitBy="words"
+              mainClassName="inline"
+              splitLevelClassName="inline-block"
+              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+              staggerFrom="first"
+              staggerDuration={0.03}
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '-100%', opacity: 0 }}
+              rotationInterval={4000}
+            />
           </h1>
           <p
             className="mx-auto mt-6 max-w-2xl text-lg text-navy-100"
