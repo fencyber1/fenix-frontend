@@ -243,6 +243,51 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* About — image + text */}
+      <section className="border-t border-content/10 bg-surface py-20">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
+          <div
+            style={{
+              opacity: featVisible ? 1 : 0,
+              transform: featVisible ? 'translateX(0)' : 'translateX(-20px)',
+              transition: prefersReduced ? 'none' : `opacity 600ms ${EASE}, transform 600ms ${EASE}`,
+            }}
+          >
+            <img
+              src="/hero-student.jpg"
+              alt="Student studying in library"
+              className="w-full rounded-2xl shadow-lg object-cover"
+              style={{ maxHeight: 420 }}
+            />
+          </div>
+          <div
+            style={{
+              opacity: featVisible ? 1 : 0,
+              transform: featVisible ? 'translateX(0)' : 'translateX(20px)',
+              transition: prefersReduced ? 'none' : `opacity 600ms ${EASE} 150ms, transform 600ms ${EASE} 150ms`,
+            }}
+          >
+            <h2 className="font-heading text-3xl font-bold text-content">
+              Built for modern schools
+            </h2>
+            <p className="mt-4 leading-relaxed text-content-muted">
+              FenDux brings students, teachers, and administrators together on one
+              platform. Track attendance in real time, manage grades per subject, issue
+              invoices, and generate report cards — all from a single dashboard.
+            </p>
+            <p className="mt-3 leading-relaxed text-content-muted">
+              Whether you run a small academy or a multi-campus institution, FenDux
+              scales with your needs while keeping data secure and accessible.
+            </p>
+            <Link to="/register" className="mt-8 inline-block">
+              <span className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97]">
+                Learn more
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section ref={ctaRef} className="border-t border-content/10 bg-surface py-20">
         <div className="mx-auto max-w-2xl px-6 text-center">
