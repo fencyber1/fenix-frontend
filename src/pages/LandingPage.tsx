@@ -203,68 +203,113 @@ export function LandingPage() {
             transform: `translate3d(${-px * 0.7}px, 0, 0)`,
           }}
         />
-        <div className="relative mx-auto max-w-6xl px-6 py-24 text-center lg:py-32">
-          <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            <RotatingText
-              texts={[
-                'Run your tenant with clarity.',
-                'Empower your school.',
-                'Manage with confidence.',
-                'Future-proof your school.',
-              ]}
-              splitBy="words"
-              mainClassName="inline"
-              splitLevelClassName="inline-block"
-              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-              staggerFrom="first"
-              staggerDuration={0.03}
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '-100%', opacity: 0 }}
-              rotationInterval={4000}
-            />
-          </h1>
-          <p
-            className="mx-auto mt-6 max-w-2xl text-lg text-navy-100"
-            style={{
-              opacity: 0,
-              transform: 'translateY(10px)',
-              animation: prefersReduced
-                ? 'none'
-                : `fadeInUp 500ms ${EASE_OUT} 700ms forwards`,
-            }}
-          >
-            <RotatingText
-              texts={[
-                'Transform your institution — modernize with technology built for education.',
-                'Save time, gain results — automate routine tasks and reclaim hours in your week.',
-                'Support every stakeholder — students, teachers, parents, and administrators in one ecosystem.',
-                'Built to grow and adapt with your changing needs.',
-              ]}
-              splitBy="words"
-              mainClassName="inline"
-              splitLevelClassName="inline-block"
-              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-              staggerFrom="first"
-              staggerDuration={0.02}
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '-100%', opacity: 0 }}
-              rotationInterval={5000}
-            />
-          </p>
-          <div className="mt-10 flex items-center justify-center gap-4">
-            <Link to="/register">
-              <span
-                className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97] active:transition-duration-[80ms]"
+        <div className="relative mx-auto max-w-6xl px-6 py-24 lg:py-32">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8">
+            {/* Left — text */}
+            <div className="text-center lg:text-left">
+              <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-5xl xl:text-6xl">
+                <RotatingText
+                  texts={[
+                    'Run your tenant with clarity.',
+                    'Empower your school.',
+                    'Manage with confidence.',
+                    'Future-proof your school.',
+                  ]}
+                  splitBy="words"
+                  mainClassName="inline"
+                  splitLevelClassName="inline-block"
+                  transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+                  staggerFrom="first"
+                  staggerDuration={0.03}
+                  initial={{ y: '100%', opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: '-100%', opacity: 0 }}
+                  rotationInterval={4000}
+                />
+              </h1>
+              <p
+                className="mx-auto mt-6 max-w-xl text-lg text-navy-100 lg:mx-0"
                 style={{
-                  animation: prefersReduced ? 'none' : `fadeInUp 500ms ${EASE_OUT} 900ms forwards, ctaFloat 3s ease-in-out 2s infinite`,
                   opacity: 0,
+                  transform: 'translateY(10px)',
+                  animation: prefersReduced
+                    ? 'none'
+                    : `fadeInUp 500ms ${EASE_OUT} 700ms forwards`,
                 }}
               >
-                Get started
-              </span>
-            </Link>
+                <RotatingText
+                  texts={[
+                    'Transform your institution — modernize with technology built for education.',
+                    'Save time, gain results — automate routine tasks and reclaim hours in your week.',
+                    'Support every stakeholder — students, teachers, parents, and administrators in one ecosystem.',
+                    'Built to grow and adapt with your changing needs.',
+                  ]}
+                  splitBy="words"
+                  mainClassName="inline"
+                  splitLevelClassName="inline-block"
+                  transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+                  staggerFrom="first"
+                  staggerDuration={0.02}
+                  initial={{ y: '100%', opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: '-100%', opacity: 0 }}
+                  rotationInterval={5000}
+                />
+              </p>
+              <div className="mt-10 flex items-center justify-center gap-4 lg:justify-start">
+                <Link to="/register">
+                  <span
+                    className="inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-500 hover:shadow-[0_8px_30px_rgba(0,217,217,0.35)] hover:scale-105 active:scale-[0.97] active:transition-duration-[80ms]"
+                    style={{
+                      animation: prefersReduced ? 'none' : `fadeInUp 500ms ${EASE_OUT} 900ms forwards, ctaFloat 3s ease-in-out 2s infinite`,
+                      opacity: 0,
+                    }}
+                  >
+                    Get started
+                  </span>
+                </Link>
+                <Link to="/login">
+                  <span
+                    className="inline-flex items-center justify-center rounded-xl border border-white/20 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:border-white/40 hover:bg-white/5 active:scale-[0.97]"
+                    style={{
+                      opacity: 0,
+                      animation: prefersReduced ? 'none' : `fadeInUp 500ms ${EASE_OUT} 1050ms forwards`,
+                    }}
+                  >
+                    Sign in
+                  </span>
+                </Link>
+              </div>
+            </div>
+            {/* Right — dashboard preview */}
+            <div
+              className="relative mx-auto hidden w-full max-w-lg lg:block"
+              style={{
+                opacity: 0,
+                transform: prefersReduced ? 'none' : 'translateY(20px) perspective(1000px) rotateY(-4deg)',
+                animation: prefersReduced ? 'none' : `fadeInUp 700ms ${EASE_OUT} 500ms forwards`,
+              }}
+            >
+              <div className="absolute -inset-4 rounded-3xl bg-teal-500/15 blur-2xl" />
+              <div className="absolute -inset-8 rounded-3xl bg-amber-500/5 blur-3xl" />
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-teal-500/10">
+                {/* Mock browser chrome */}
+                <div className="flex items-center gap-2 border-b border-white/10 bg-navy-900/80 px-4 py-2.5">
+                  <span className="h-3 w-3 rounded-full bg-red-400/70" />
+                  <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
+                  <span className="h-3 w-3 rounded-full bg-green-400/70" />
+                  <div className="ml-4 flex-1 rounded-md bg-white/5 px-3 py-1 text-xs text-white/30">
+                    app.fendux.com/dashboard
+                  </div>
+                </div>
+                <img
+                  src="/hero-dashboard.jpg"
+                  alt="FenDux dashboard preview"
+                  className="block w-full object-cover"
+                  style={{ maxHeight: 380 }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -309,9 +354,9 @@ export function LandingPage() {
             }}
           >
             <img
-              src="/hero-student.jpg"
-              alt="Student studying in library"
-              className="w-full rounded-2xl shadow-lg object-cover"
+              src="/hero-dashboard.jpg"
+              alt="FenDux dashboard preview"
+              className="w-full rounded-2xl border border-content/10 shadow-lg object-cover"
               style={{ maxHeight: 420 }}
             />
           </div>
